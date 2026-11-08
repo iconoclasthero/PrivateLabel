@@ -1,0 +1,5 @@
+[deluge.plugin.core]
+PrivateLabel = deluge_privatelabel:CorePlugin
+
+[deluge.plugin.gtk3ui]
+PrivateLabel = deluge_privatelabel:GtkUIPlugin
