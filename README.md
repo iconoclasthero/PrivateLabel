@@ -44,7 +44,7 @@ See also the [official Deluge plugin installation instructions](https://deluge-t
 
 ## Status
 
-Written against Deluge 2.2.0 and current master. The private-flag matching logic has been tested against mock torrents; it has had limited testing in a live client. Issues and PRs welcome.
+Written against Deluge 2.2.0 and current master. The private-flag matching logic has been tested against mock torrents; it has had limited testing in a live client. Provided as-is; I use it myself and don't plan to actively support it.
 
 ## License
 
