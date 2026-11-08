@@ -20,9 +20,9 @@ Because torrents that are not private may not include `private=0`, anything not 
 
 Private torrents match nothing, so they stay unlabeled and keep the global setting (off) — or mark them as private for symmetry. 
 
+
+ ## Behavior to know about
 > [!CAUTION]
-> ## Behavior to know about:
->
 > **If you already use labels, this plugin is _probably_ not for you. Please read the following:**
 > - **Saving a label re-sweeps your whole queue.** When you save a label that has auto-apply on, every existing torrent that matches is assigned that label, **including torrents already in another label**. This is intentional (set it once and it applies to everything), but if you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into its label.
 > - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled afterwards. Not yet verified on a live daemon.
