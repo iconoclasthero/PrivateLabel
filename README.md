@@ -18,13 +18,16 @@ Because torrents that are not private may not include `private=0`, anything not 
 4. On the **Trackers** tab tick **Automatically apply label** and **Torrents without the private flag (public)**.
 5. Click OK.
 
-Private torrents match nothing, so they stay unlabeled and keep the global setting (off).
+Private torrents match nothing, so they stay unlabeled and keep the global setting (off) — or mark them as private for symmetry. 
 
-## Behavior to know about
+> [!CAUTION]
+> ## Behavior to know about:
+>
+> **If you already use labels, this plugin is _probably_ not for you. Please read the following:**
+> - **Saving a label re-sweeps your whole queue.** When you save a label that has auto-apply on, every existing torrent that matches is assigned that label, **including torrents already in another label**. This is intentional (set it once and it applies to everything), but if you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into its label.
+> - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled afterwards. Not yet verified on a live daemon.
+> - If more than one label matches a new torrent, the first one wins.
 
-- **Saving a label re-sweeps your whole queue.** When you save a label that has auto-apply on, every existing torrent that matches is assigned that label, **including torrents already in another label**. This is intentional (set it once and it applies to everything), but if you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into its label.
-- **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled afterwards. Not yet verified on a live daemon.
-- If more than one label matches a new torrent, the first one wins.
 
 ## Installation
 
@@ -44,7 +47,7 @@ See also the [official Deluge plugin installation instructions](https://deluge-t
 
 ## Status
 
-Written against Deluge 2.2.0 and current master. The private-flag matching logic has been tested against mock torrents; it has had limited testing in a live client. Provided as-is; I use it myself and don't plan to actively support it.
+Written against Deluge 2.2.0 and current master. The private-flag matching logic has been tested against mock torrents; it has had limited testing in a live client. Provided as-is; I use it myself and and plan only limited support going forward.
 
 ## License
 
