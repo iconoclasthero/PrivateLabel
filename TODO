@@ -1,5 +1,3 @@
-- "Apply to all existing torrents" button, so the retroactive sweep is explicit
-  instead of a side effect of saving a label's options.
 - Confirm on a live daemon that magnets get labeled once metadata arrives.
 - Unit tests for the private-flag matching (all label/flag/tracker combinations).
 - Web UI port (the Label plugin's web UI was dropped in this fork).

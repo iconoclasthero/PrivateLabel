@@ -704,6 +704,21 @@
                             <property name="position">3</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="apply_existing">
+                            <property name="label" translatable="yes">Apply to all existing torrents</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="tooltip_text" translatable="yes">Saves these options, then assigns this label to every existing torrent that matches, including torrents currently in another label.</property>
+                            <signal name="clicked" handler="on_apply_existing" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
                       </object>
                     </child>
                   </object>

@@ -11,7 +11,7 @@ from setuptools import find_packages, setup
 __plugin_name__ = 'PrivateLabel'
 __author__ = 'Martijn Voncken'
 __author_email__ = 'mvoncken@gmail.com'
-__version__ = '0.3'
+__version__ = '0.4'
 __url__ = 'http://deluge-torrent.org'
 __license__ = 'GPLv3'
 __description__ = 'Label plugin that can auto-apply labels by the torrent private flag'

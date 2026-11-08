@@ -330,14 +330,38 @@ class Core(CorePluginBase):
             if label_id == label and torrent_id in self.torrents:
                 self._set_torrent_options(torrent_id, label_id)
 
-        # auto add
+        # auto add: only label torrents that have no label yet. Reassigning
+        # torrents from other labels is left to apply_to_existing().
         options = self.labels[label_id]
         if options['auto_add']:
-            for torrent_id, torrent in self.torrents.items():
+            for torrent_id, torrent in list(self.torrents.items()):
+                if torrent_id in self.torrent_labels:
+                    continue
                 if self._has_auto_match(torrent, options):
                     self.set_torrent(torrent_id, label_id)
 
         self.config.save()
+
+    @export
+    def apply_to_existing(self, label_id):
+        """Assign this label to every existing torrent matching its rules.
+
+        Unlike saving the label's options, this also takes torrents that are
+        currently in another label. Torrents without metadata (magnets) are
+        skipped, since their private flag is not known yet.
+
+        Returns the number of torrents that were assigned the label.
+        """
+        check_input(label_id in self.labels, _('Unknown Label'))
+        options = self.labels[label_id]
+        count = 0
+        for torrent_id, torrent in list(self.torrents.items()):
+            if self.torrent_labels.get(torrent_id) == label_id:
+                continue
+            if self._has_auto_match(torrent, options):
+                self.set_torrent(torrent_id, label_id)
+                count += 1
+        return count
 
     @export
     def get_options(self, label_id):

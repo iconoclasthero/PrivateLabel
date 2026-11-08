@@ -159,7 +159,12 @@ class OptionsDialog:
         ('move_completed', ['move_completed_path']),  # nested
         (
             'auto_add',
-            ['auto_add_trackers', 'auto_add_private', 'auto_add_not_private'],
+            [
+                'auto_add_trackers',
+                'auto_add_private',
+                'auto_add_not_private',
+                'apply_existing',
+            ],
         ),
     ]
 
@@ -213,8 +218,8 @@ class OptionsDialog:
 
         self.apply_sensitivity()
 
-    def on_options_ok(self, event=None):
-        """Save options."""
+    def _collect_options(self):
+        """Read the dialog widgets into an options dict."""
         options = {}
 
         for spin_id in self.spin_ids:
@@ -250,7 +255,49 @@ class OptionsDialog:
         ]  # filter out empty lines.
 
         log.debug(options)
-        client.privatelabel.set_options(self.label, options)
+        return options
+
+    def on_options_ok(self, event=None):
+        """Save options."""
+        client.privatelabel.set_options(self.label, self._collect_options())
+        self.dialog.destroy()
+
+    def on_apply_existing(self, event=None):
+        """Save options, then assign this label to all matching torrents."""
+        confirm = Gtk.MessageDialog(
+            transient_for=self.dialog,
+            modal=True,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text=_('Apply label "%s" to all existing torrents?') % self.label,
+        )
+        confirm.format_secondary_text(
+            _(
+                'This saves the options and assigns the label to every matching '
+                'torrent, including torrents currently in another label.'
+            )
+        )
+        response = confirm.run()
+        confirm.destroy()
+        if response != Gtk.ResponseType.YES:
+            return
+
+        d = client.privatelabel.set_options(self.label, self._collect_options())
+        d.addCallback(lambda _result: client.privatelabel.apply_to_existing(self.label))
+        d.addCallback(self._on_applied_existing)
+        d.addErrback(lambda failure: log.error('apply to existing failed: %s', failure))
+
+    def _on_applied_existing(self, count):
+        done = Gtk.MessageDialog(
+            transient_for=self.dialog,
+            modal=True,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.OK,
+            text=_('Label "%(label)s" assigned to %(count)d torrent(s).')
+            % {'label': self.label, 'count': count},
+        )
+        done.run()
+        done.destroy()
         self.dialog.destroy()
 
     def apply_sensitivity(self, event=None):
