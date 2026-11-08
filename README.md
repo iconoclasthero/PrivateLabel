@@ -1,4 +1,4 @@
-# PrivateLabel
+# PrivateLabel for Deluge 2.x
 
 ### Allows labeling torrents by the private setting of torrents.
 
@@ -8,3 +8,5 @@ Ever wanted to set **all** your public torrents to seed until meeting a ratio wh
 
 Because torrents that are not private may not include Private=0, it is assumed that anything that is not explicitly set as private is public.  
 If your favorite private tracker doesn't enforce the private flag on torrents, you may have issues.
+
+Please refer to the [official Deluge plugin installation instructions](https://deluge-torrent.org/plugins/#install).
