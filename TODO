@@ -1,7 +1,5 @@
 - Confirm on a live daemon that magnets get labeled once metadata arrives.
 - Unit tests for the private-flag matching (all label/flag/tracker combinations).
 - Web UI port (the Label plugin's web UI was dropped in this fork).
-- Known issue: saving a label with auto-apply on can still pull existing torrents
-  into it without using the apply button (see GitHub issue).
 - Not doing: a remove-at-ratio checkbox in the right-click Options > Stop Seed At
   Ratio box; that dialog lives in Deluge's own menu code.
