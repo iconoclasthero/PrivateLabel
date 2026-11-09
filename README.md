@@ -26,7 +26,7 @@ Private torrents don't match the `public` label, so they stay unlabeled and keep
 > ## Behavior to know about:
 >
 > **If you already use labels, this plugin is _probably_ not for you. Please read the following:**
-> - **Apply to all existing torrents** (Trackers tab) saves the label's options and then assigns the label to every existing torrent that matches, **including torrents already in another label**. It asks for confirmation first. If you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into this label. Plain **OK** only labels torrents that have no label yet.
+> - **Apply to all existing torrents** (Trackers tab) saves the label's options and then assigns the label to every existing torrent that matches, **including torrents already in another label**. It asks for confirmation first. If you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into this label. **Known issue:** plain **OK** is meant to label only torrents that have no label yet, but in testing existing torrents were still pulled into the label without using the button, so treat saving any label that has auto-apply on as something that may relabel your whole queue.
 > - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled afterwards. Not yet verified on a live daemon.
 > - If more than one label matches a new torrent, the first one wins.
 
@@ -39,7 +39,7 @@ PrivateLabel installs as a separate plugin and **replaces** the built-in Label p
 - It uses its own config file, `privatelabel.conf`, and its own RPC namespace (`privatelabel`). Your existing labels are not carried over. To keep them, copy `label.conf` to `privatelabel.conf` in the daemon's config folder before enabling the plugin (the format is the same).
 - The Web UI part of Label is not included. GTK client only.
 
-The plugin has a daemon half and a GTK half, so it must be installed on both the machine running `deluged` and the machine running `deluge-gtk`. Eggs are tied to a Python version: the `pyX.Y` in the filename must match the Python that runs the daemon or client, or Deluge will not list the plugin. The repo includes a prebuilt `PrivateLabel-0.4-py3.14.egg`; it is pure Python, so the tag can be changed by renaming the file. To check, run `deluged --version`, which prints the Python version.
+The plugin has a daemon half and a GTK half, so it must be installed on both the machine running `deluged` and the machine running `deluge-gtk`. Eggs are tied to a Python version: the `pyX.Y` in the filename must match the Python that runs the daemon or client, or Deluge will not list the plugin. The repo includes a prebuilt `PrivateLabel-0.5-py3.14.egg`; it is pure Python, so the tag can be changed by renaming the file. To check, run `deluged --version`, which prints the Python version.
 
 - **Local:** copy the egg into Deluge's `plugins` folder (`~/.config/deluge/plugins` on Linux), then enable it in Preferences → Plugins.
 - **Remote daemon:** connect `deluge-gtk` to the daemon and use Preferences → Plugins → **Install**; the client uploads the egg to the daemon.
