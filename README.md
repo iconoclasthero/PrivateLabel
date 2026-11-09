@@ -8,6 +8,8 @@ Ever wanted to set **all** your public torrents to seed until meeting a ratio wh
 
 PrivateLabel is a fork of Deluge's built-in **Label** plugin. It adds two checkboxes to a label's **Trackers** tab: apply the label to torrents **with** the private flag, and/or to torrents **without** it. The original tracker-substring auto-add still works, and the two combine (a torrent matching either one gets the label).
 
+It also adds a **Seed Until** column to the torrent list showing each torrent's ratio limit at a glance: `2.0⏸` pauses at 2.0:1, `2.0×` removes at 2.0:1, and `∞` means no limit.
+
 Because torrents that are not private may not include `private=0`, anything not explicitly flagged private is treated as public. If your favorite private tracker doesn't set the private flag on its torrents, those torrents will be treated as public.
 
 ## Example: stop public seeds at a ratio, let private seeds run forever
@@ -16,16 +18,16 @@ Because torrents that are not private may not include `private=0`, anything not 
 2. Create a label, e.g. `public`, and open its options.
 3. On the **Queue** tab tick **Apply Queue settings**, tick **Stop seed at ratio**, and set the ratio.
 4. On the **Trackers** tab tick **Automatically apply label** and **Torrents without the private flag (public)**.
-5. Click OK.
+5. Click **OK** to apply the label to torrents added from now on, or click **Apply to all existing torrents** to also label everything already in your queue that matches.
 
-Private torrents match nothing, so they stay unlabeled and keep the global setting (off) — or mark them as private for symmetry. 
+Private torrents don't match the `public` label, so they stay unlabeled and keep the global setting (off). You can also make a second label, e.g. `private`, with **Torrents with the private flag** ticked, to keep them grouped in the sidebar and to give them their own queue, speed or folder rules. 
 
 
  ## Behavior to know about
 > [!CAUTION]
 > **If you already use labels, this plugin is _probably_ not for you. Please read the following:**
-> - **Saving a label re-sweeps your whole queue.** When you save a label that has auto-apply on, every existing torrent that matches is assigned that label, **including torrents already in another label**. This is intentional (set it once and it applies to everything), but if you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into its label.
-> - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled afterwards. Not yet verified on a live daemon.
+> - **Apply to all existing torrents** (Trackers tab) saves the label's options and then assigns the label to every existing torrent that matches, **including torrents already in another label**. It asks for confirmation first. If you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into this label. Plain **OK** never touches torrents already in your queue; auto-apply only affects torrents added afterwards.
+> - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled as soon as the metadata arrives. This relies on libtorrent's metadata-received alert and has had limited live testing.
 > - If more than one label matches a new torrent, the first one wins.
 
 
@@ -36,8 +38,9 @@ PrivateLabel installs as a separate plugin and **replaces** the built-in Label p
 - Enable **PrivateLabel** and disable **Label**. Both register the same sidebar category and Label column, so don't run them together.
 - It uses its own config file, `privatelabel.conf`, and its own RPC namespace (`privatelabel`). Your existing labels are not carried over. To keep them, copy `label.conf` to `privatelabel.conf` in the daemon's config folder before enabling the plugin (the format is the same).
 - The Web UI part of Label is not included. GTK client only.
+- After enabling the plugin for the first time, the Labels list may not appear in the sidebar until you toggle PrivateLabel off and on again in Preferences → Plugins.
 
-The plugin has a daemon half and a GTK half, so it must be installed on both the machine running `deluged` and the machine running `deluge-gtk`. Eggs are tied to a Python version: the `pyX.Y` in the filename must match the Python that runs the daemon or client, or Deluge will not list the plugin. The repo includes a prebuilt `PrivateLabel-0.3-py3.14.egg`; it is pure Python, so the tag can be changed by renaming the file. To check, run `deluged --version`, which prints the Python version.
+The plugin has a daemon half and a GTK half, so it must be installed on both the machine running `deluged` and the machine running `deluge-gtk`. Eggs are tied to a Python version: the `pyX.Y` in the filename must match the Python that runs the daemon or client, or Deluge will not list the plugin. The repo includes a prebuilt `PrivateLabel-0.7-py3.14.egg`; it is pure Python, so the tag can be changed by renaming the file. To check, run `deluged --version`, which prints the Python version.
 
 - **Local:** copy the egg into Deluge's `plugins` folder (`~/.config/deluge/plugins` on Linux), then enable it in Preferences → Plugins.
 - **Remote daemon:** connect `deluge-gtk` to the daemon and use Preferences → Plugins → **Install**; the client uploads the egg to the daemon.
@@ -47,7 +50,7 @@ See also the [official Deluge plugin installation instructions](https://deluge-t
 
 ## Status
 
-Written against Deluge 2.2.0 and current master. The private-flag matching logic has been tested against mock torrents; it has had limited testing in a live client. Provided as-is; I use it myself and and plan only limited support going forward.
+Written against Deluge 2.2.0 and current master. The private-flag matching logic has been tested against mock torrents; the label-assignment logic (including the apply button's backend) was tested against mock torrents, and the GTK dialog has had limited testing in a live client. Provided as-is; I use it myself and plan only limited support going forward.
 
 ## License
 

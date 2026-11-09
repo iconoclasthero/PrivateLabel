@@ -78,6 +78,7 @@ class Core(CorePluginBase):
         log.info('*** Start Label plugin ***')
         self.plugin = component.get('CorePluginManager')
         self.plugin.register_status_field('label', self._status_get_label)
+        self._awaiting_metadata = set()  # magnets whose private flag is unknown
 
         # __init__
         core = component.get('Core')
@@ -102,6 +103,13 @@ class Core(CorePluginBase):
         component.get('EventManager').register_event_handler(
             'TorrentStateChangedEvent', self.post_torrent_state_changed
         )
+        # Deluge reports a magnet as "Downloading" both before and after its
+        # metadata arrives, so no state change fires at that moment. Listen for
+        # libtorrent's metadata alert instead. Deluge's own handler for it was
+        # registered earlier and has already set torrent.has_metadata.
+        component.get('AlertManager').register_handler(
+            'metadata_received_alert', self.on_alert_metadata_received
+        )
 
         # register tree:
         component.get('FilterManager').register_tree_field(
@@ -122,6 +130,9 @@ class Core(CorePluginBase):
         component.get('EventManager').deregister_event_handler(
             'TorrentStateChangedEvent', self.post_torrent_state_changed
         )
+        component.get('AlertManager').deregister_handler(
+            self.on_alert_metadata_received
+        )
 
     def update(self):
         pass
@@ -133,10 +144,13 @@ class Core(CorePluginBase):
 
     # Plugin hooks #
     def post_torrent_add(self, torrent_id, from_state):
+        torrent = self.torrents[torrent_id]
+        if not torrent.has_metadata:
+            # Magnet: the private flag is unknown until the metadata arrives.
+            self._awaiting_metadata.add(torrent_id)
         if from_state:
             return
         log.debug('post_torrent_add')
-        torrent = self.torrents[torrent_id]
 
         for label_id, options in self.labels.items():
             if options['auto_add']:
@@ -144,12 +158,31 @@ class Core(CorePluginBase):
                     self.set_torrent(torrent_id, label_id)
                     return
 
-    def post_torrent_state_changed(self, torrent_id, state):
-        """Label unlabeled torrents whose private flag became known late."""
-        if torrent_id in self.torrent_labels or torrent_id not in self.torrents:
+    def on_alert_metadata_received(self, alert):
+        """A magnet's metadata, and so its private flag, just arrived."""
+        try:
+            torrent_id = str(alert.handle.info_hash())
+        except RuntimeError:
             return
-        torrent = self.torrents[torrent_id]
-        if not torrent.has_metadata:
+        self._label_awaiting(torrent_id)
+
+    def post_torrent_state_changed(self, torrent_id, state):
+        """Fallback for magnets: retry on a state change if the alert was missed."""
+        self._label_awaiting(torrent_id)
+
+    def _label_awaiting(self, torrent_id):
+        """Label a magnet once its metadata (and private flag) is known.
+
+        Only torrents that were added without metadata are considered, so this
+        never relabels torrents that were already in the queue.
+        """
+        if torrent_id not in self._awaiting_metadata:
+            return
+        torrent = self.torrents.get(torrent_id)
+        if torrent is None or not torrent.has_metadata:
+            return
+        self._awaiting_metadata.discard(torrent_id)
+        if torrent_id in self.torrent_labels:
             return
         for label_id, options in self.labels.items():
             if options['auto_add'] and self._has_flag_match(torrent, options):
@@ -157,6 +190,7 @@ class Core(CorePluginBase):
                 return
 
     def post_torrent_remove(self, torrent_id):
+        self._awaiting_metadata.discard(torrent_id)
         log.debug('post_torrent_remove')
         if torrent_id in self.torrent_labels:
             del self.torrent_labels[torrent_id]
@@ -330,14 +364,30 @@ class Core(CorePluginBase):
             if label_id == label and torrent_id in self.torrents:
                 self._set_torrent_options(torrent_id, label_id)
 
-        # auto add
-        options = self.labels[label_id]
-        if options['auto_add']:
-            for torrent_id, torrent in self.torrents.items():
-                if self._has_auto_match(torrent, options):
-                    self.set_torrent(torrent_id, label_id)
-
+        # Saving never touches existing torrents' labels: auto-apply only
+        # affects torrents added later. Use apply_to_existing() for the rest.
         self.config.save()
+
+    @export
+    def apply_to_existing(self, label_id):
+        """Assign this label to every existing torrent matching its rules.
+
+        Unlike saving the label's options, this also takes torrents that are
+        currently in another label. Torrents without metadata (magnets) are
+        skipped, since their private flag is not known yet.
+
+        Returns the number of torrents that were assigned the label.
+        """
+        check_input(label_id in self.labels, _('Unknown Label'))
+        options = self.labels[label_id]
+        count = 0
+        for torrent_id, torrent in list(self.torrents.items()):
+            if self.torrent_labels.get(torrent_id) == label_id:
+                continue
+            if self._has_auto_match(torrent, options):
+                self.set_torrent(torrent_id, label_id)
+                count += 1
+        return count
 
     @export
     def get_options(self, label_id):

@@ -9,19 +9,16 @@
 from setuptools import find_packages, setup
 
 __plugin_name__ = 'PrivateLabel'
-__author__ = 'Martijn Voncken'
-__author_email__ = 'mvoncken@gmail.com'
-__version__ = '0.3'
-__url__ = 'http://deluge-torrent.org'
+__author__ = 'Iconoclasthero'
+__author_email__ = 'privatelabel@iconoclasthero.com'
+__version__ = '0.7'
+__url__ = 'https://github.com/iconoclasthero/PrivateLabel'
 __license__ = 'GPLv3'
-__description__ = 'Label plugin that can auto-apply labels by the torrent private flag'
-__long_description__ = """
-Fork of the Label plugin. Allows labels to be assigned to torrents, and
-auto-applies a label to torrents with / without the private flag.
-
-Uses its own config file (privatelabel.conf) and RPC namespace (privatelabel).
-Cannot be enabled together with the built-in Label plugin.
-"""
+__description__ = "Label plugin that auto-applies labels by a torrent's private flag"
+__long_description__ = (
+    "Fork of Deluge's Label plugin that auto-applies a label to torrents with or without the private flag, "
+    "with an apply-to-existing button and a Seed Until ratio column. Replaces the built-in Label plugin; do not enable both."
+)
 __pkg_data__ = {'deluge_' + __plugin_name__.lower(): ['data/*']}
 
 setup(
