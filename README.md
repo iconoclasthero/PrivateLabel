@@ -18,7 +18,7 @@ Because torrents that are not private may not include `private=0`, anything not 
 4. On the **Trackers** tab tick **Automatically apply label** and **Torrents without the private flag (public)**.
 5. Click **OK** to apply the label to new torrents (and to any existing torrent that has no label yet), or click **Apply to all existing torrents** to also relabel everything already in your queue that matches.
 
-Private torrents match nothing, so they stay unlabeled and keep the global setting (off) — or mark them as private for symmetry. 
+Private torrents don't match the `public` label, so they stay unlabeled and keep the global setting (off). You can also make a second label, e.g. `private`, with **Torrents with the private flag** ticked, to keep them grouped in the sidebar and to give them their own queue, speed or folder rules. 
 
 > [!CAUTION]
 > ## Behavior to know about:
