@@ -8,7 +8,7 @@ Ever wanted to set **all** your public torrents to seed until meeting a ratio wh
 
 PrivateLabel is a fork of Deluge's built-in **Label** plugin. It adds two checkboxes to a label's **Trackers** tab: apply the label to torrents **with** the private flag, and/or to torrents **without** it. The original tracker-substring auto-add still works, and the two combine (a torrent matching either one gets the label).
 
-It also adds a **Seed Until** column to the torrent list showing each torrent's ratio limit at a glance: `2.0` stops (pauses) at 2.0:1, `2.0r` removes at 2.0:1, and `∞` means no limit.
+It also adds a **Seed Until** column to the torrent list showing each torrent's ratio limit at a glance: `2.0⏸` pauses at 2.0:1, `2.0×` removes at 2.0:1, and `∞` means no limit.
 
 Because torrents that are not private may not include `private=0`, anything not explicitly flagged private is treated as public. If your favorite private tracker doesn't set the private flag on its torrents, those torrents will be treated as public.
 

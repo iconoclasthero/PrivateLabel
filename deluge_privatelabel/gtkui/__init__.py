@@ -21,8 +21,8 @@ SEED_UNTIL_HEADER = 'Seed Until'
 def cell_data_seed_until(column, cell, model, row, data):
     """Show a torrent's stop-at-ratio setting compactly.
 
-    ``2.0`` stops (pauses) at 2.0:1, ``2.0r`` removes at 2.0:1, and ``∞`` means
-    the torrent has no ratio limit.
+    ``2.0⏸`` pauses at 2.0:1, ``2.0×`` removes at 2.0:1, and ``∞`` means the
+    torrent has no ratio limit.
     """
     ratio, stop_at_ratio, remove_at_ratio = model.get(row, *data)
     if not stop_at_ratio:
@@ -31,8 +31,7 @@ def cell_data_seed_until(column, cell, model, row, data):
         text = '%.2f' % ratio
         if text.endswith('0'):
             text = text[:-1]  # 2.00 -> 2.0, 1.25 stays 1.25
-        if remove_at_ratio:
-            text += 'r'
+        text += '×' if remove_at_ratio else '⏸'
     cell.set_property('text', text)
 
 NO_LABEL = 'No Label'
@@ -99,7 +98,7 @@ class GtkUI(Gtk3PluginBase):
             [float, bool, bool],
             status_field=['stop_ratio', 'stop_at_ratio', 'remove_at_ratio'],
             tooltip=_(
-                'Ratio at which the torrent stops (or, with "r", is removed). '
+                'Ratio at which the torrent pauses (⏸) or is removed (×). '
                 '∞ means no ratio limit.'
             ),
         )
