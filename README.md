@@ -22,9 +22,9 @@ Because torrents that are not private may not include `private=0`, anything not 
 
 Private torrents don't match the `public` label, so they stay unlabeled and keep the global setting (off). You can also make a second label, e.g. `private`, with **Torrents with the private flag** ticked, to keep them grouped in the sidebar and to give them their own queue, speed or folder rules. 
 
+
+ ## Behavior to know about
 > [!CAUTION]
-> ## Behavior to know about:
->
 > **If you already use labels, this plugin is _probably_ not for you. Please read the following:**
 > - **Apply to all existing torrents** (Trackers tab) saves the label's options and then assigns the label to every existing torrent that matches, **including torrents already in another label**. It asks for confirmation first. If you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into this label. Plain **OK** never touches torrents already in your queue; auto-apply only affects torrents added afterwards.
 > - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled afterwards. Not yet verified on a live daemon.
