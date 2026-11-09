@@ -27,7 +27,7 @@ Private torrents don't match the `public` label, so they stay unlabeled and keep
 > [!CAUTION]
 > **If you already use labels, this plugin is _probably_ not for you. Please read the following:**
 > - **Apply to all existing torrents** (Trackers tab) saves the label's options and then assigns the label to every existing torrent that matches, **including torrents already in another label**. It asks for confirmation first. If you use several labels, be aware a broad rule like "without the private flag" will pull matching torrents into this label. Plain **OK** never touches torrents already in your queue; auto-apply only affects torrents added afterwards.
-> - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled afterwards. Not yet verified on a live daemon.
+> - **Magnet links** have no private flag until their metadata arrives, so they are skipped until then and labeled as soon as the metadata arrives. This relies on libtorrent's metadata-received alert and has had limited live testing.
 > - If more than one label matches a new torrent, the first one wins.
 
 
@@ -40,7 +40,7 @@ PrivateLabel installs as a separate plugin and **replaces** the built-in Label p
 - The Web UI part of Label is not included. GTK client only.
 - After enabling the plugin for the first time, the Labels list may not appear in the sidebar until you toggle PrivateLabel off and on again in Preferences → Plugins.
 
-The plugin has a daemon half and a GTK half, so it must be installed on both the machine running `deluged` and the machine running `deluge-gtk`. Eggs are tied to a Python version: the `pyX.Y` in the filename must match the Python that runs the daemon or client, or Deluge will not list the plugin. The repo includes a prebuilt `PrivateLabel-0.6-py3.14.egg`; it is pure Python, so the tag can be changed by renaming the file. To check, run `deluged --version`, which prints the Python version.
+The plugin has a daemon half and a GTK half, so it must be installed on both the machine running `deluged` and the machine running `deluge-gtk`. Eggs are tied to a Python version: the `pyX.Y` in the filename must match the Python that runs the daemon or client, or Deluge will not list the plugin. The repo includes a prebuilt `PrivateLabel-0.7-py3.14.egg`; it is pure Python, so the tag can be changed by renaming the file. To check, run `deluged --version`, which prints the Python version.
 
 - **Local:** copy the egg into Deluge's `plugins` folder (`~/.config/deluge/plugins` on Linux), then enable it in Preferences → Plugins.
 - **Remote daemon:** connect `deluge-gtk` to the daemon and use Preferences → Plugins → **Install**; the client uploads the egg to the daemon.

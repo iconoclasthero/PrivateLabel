@@ -11,7 +11,7 @@ from setuptools import find_packages, setup
 __plugin_name__ = 'PrivateLabel'
 __author__ = 'Iconoclasthero'
 __author_email__ = 'privatelabel@iconoclasthero.com'
-__version__ = '0.6'
+__version__ = '0.7'
 __url__ = 'https://github.com/iconoclasthero/PrivateLabel'
 __license__ = 'GPLv3'
 __description__ = "Label plugin that auto-applies labels by a torrent's private flag"

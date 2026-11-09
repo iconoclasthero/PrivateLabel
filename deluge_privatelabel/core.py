@@ -103,6 +103,13 @@ class Core(CorePluginBase):
         component.get('EventManager').register_event_handler(
             'TorrentStateChangedEvent', self.post_torrent_state_changed
         )
+        # Deluge reports a magnet as "Downloading" both before and after its
+        # metadata arrives, so no state change fires at that moment. Listen for
+        # libtorrent's metadata alert instead. Deluge's own handler for it was
+        # registered earlier and has already set torrent.has_metadata.
+        component.get('AlertManager').register_handler(
+            'metadata_received_alert', self.on_alert_metadata_received
+        )
 
         # register tree:
         component.get('FilterManager').register_tree_field(
@@ -122,6 +129,9 @@ class Core(CorePluginBase):
         )
         component.get('EventManager').deregister_event_handler(
             'TorrentStateChangedEvent', self.post_torrent_state_changed
+        )
+        component.get('AlertManager').deregister_handler(
+            self.on_alert_metadata_received
         )
 
     def update(self):
@@ -148,7 +158,19 @@ class Core(CorePluginBase):
                     self.set_torrent(torrent_id, label_id)
                     return
 
+    def on_alert_metadata_received(self, alert):
+        """A magnet's metadata, and so its private flag, just arrived."""
+        try:
+            torrent_id = str(alert.handle.info_hash())
+        except RuntimeError:
+            return
+        self._label_awaiting(torrent_id)
+
     def post_torrent_state_changed(self, torrent_id, state):
+        """Fallback for magnets: retry on a state change if the alert was missed."""
+        self._label_awaiting(torrent_id)
+
+    def _label_awaiting(self, torrent_id):
         """Label a magnet once its metadata (and private flag) is known.
 
         Only torrents that were added without metadata are considered, so this
